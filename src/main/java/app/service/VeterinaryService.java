@@ -3,6 +3,8 @@ package app.service;
 import java.util.Arrays;
 import java.util.List;
 
+import app.dao.HistoryDao;
+import app.dao.HistoryDaoImpl;
 import app.dao.LoginDao;
 import app.dao.LoginDaoImpl;
 import app.dao.OrderDao;
@@ -19,7 +21,7 @@ import app.dto.SessionDto;
 
 public class VeterinaryService implements AdministratorService, VetService, LoginService {
 	List<String> roles = Arrays.asList("Admin", "Vet", "Owner", "Seller");
-	List<String> speciesPet = Arrays.asList("Perro","Gato","Pez","Ave");
+	List<String> speciesPet = Arrays.asList("Perro", "Gato", "Pez", "Ave");
 	private static long sessionId = 0L;
 
 	private void createUser(PersonDto personDto) throws Exception {
@@ -121,39 +123,62 @@ public class VeterinaryService implements AdministratorService, VetService, Logi
 
 	@Override
 	public void createHistoryClinic(HistoryDto historyDto) throws Exception {
-		System.out.println("Creada");
+		LoginDao loginDao = new LoginDaoImpl();
+		SessionDto sessionDto = loginDao.findSessionById(sessionId);
+		if (sessionDto == null) {
+			throw new Exception("no hay una sesion valida");
+		}
+		PersonDao personDao = new PersonDaoImpl();
+		PersonDto personDto = new PersonDto(sessionDto.getUserName(), "");
+		personDto = personDao.findUserByUserName(personDto);
+		if (personDto == null) {
+			throw new Exception("no hay un usuario valido");
+		}
+		historyDto.setVet(personDto);
+		PetDao petDao = new PetDaoImpl();
+		if (!petDao.findPetById(historyDto.getIdPet())) {
+			throw new Exception("no hay una mascota valida");
+		}
+		HistoryDao historyDao = new HistoryDaoImpl();
+		historyDao.createHistory(historyDto);
+	}
+
+	@Override
+	public void findHistoryClinic(HistoryDto historyDto) throws Exception {
+		PetDao petDao = new PetDaoImpl();
+		if (!petDao.findPetById(historyDto.getIdPet())) {
+			throw new Exception("no hay una mascota valida");
+		}
+		HistoryDao historyDao = new HistoryDaoImpl();
+		List<HistoryDto> resultHistoryDto = historyDao.findHistory(historyDto);
+		if (resultHistoryDto.size() == 0) {
+			throw new Exception("no hay un historia clinica");
+		}
+		for (int i = 0; i < resultHistoryDto.size(); i++) {
+			resultHistoryDto.get(i).showHistorys();
+		}
+	}
+
+	@Override
+	public void findOrders() throws Exception {
+		OrderDao orderDao = new OrderDaoImpl();
+		List<OrderDto> resultOrders = orderDao.findOrders();
+		if (resultOrders.size() == 0) {
+			throw new Exception("no hay un historia clinica, o ya estan anuladas");
+		}
+		for (int i = 0; i < resultOrders.size(); i++) {
+			resultOrders.get(i).showOrders();
+		}
+	}
+
+	@Override
+	public void cancelOrder(OrderDto orderDto) throws Exception {
+		OrderDao orderDao = new OrderDaoImpl();
+		if (!orderDao.findOrderById(orderDto)) {
+			throw new Exception("no hay una orden valida");
+		}
+		orderDao.cancelOrder(orderDto);
+
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

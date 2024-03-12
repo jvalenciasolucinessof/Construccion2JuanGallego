@@ -21,7 +21,7 @@ public class DominioController {
 	private static AdministratorService administratorService = new VeterinaryService();
 	private static VetService vetService = new VeterinaryService();
 	private static final String MENUADMIN = "1. Crear usuario \n2. Cerrar sesion";
-	private static final String MENUVET = "1. Crear dueño \n2. Crear Mascota \n3. Atender Mascota \n4. Consultar Historia Clinica \n5. Editar Historia Clinica \n6. Listado Ordenes \n7. Anular Orden \n8. Cerrar sesion";
+	private static final String MENUVET = "1. Crear dueño \n2. Crear Mascota \n3. Atender Mascota \n4. Consultar Historia Clinica \n5. Listado Ordenes \n6. Anular Orden \n7. Cerrar sesion";
 
 	// SESION ADMIN
 	public void sessionAdmin() {
@@ -115,7 +115,19 @@ public class DominioController {
 			createHistoryClinic();
 			return true;
 		}
-		case "8": {
+		case "4": {
+			findHistoryClinic();
+			return true;
+		}
+		case "5": {
+			findOrders();
+			return true;
+		}
+		case "6": {
+			cancelOrders();
+			return true;
+		}
+		case "7": {
 			return false;
 		}
 		default: {
@@ -168,6 +180,8 @@ public class DominioController {
 	}
 
 	public void createHistoryClinic() throws Exception {
+		long actualDate = System.currentTimeMillis();
+		// Date admissionDate = new Date(actualDate);
 		System.out.println("==============INGRESO DE HISTORIA CLINICA================");
 		System.out.println("Ingresa el id de la mascota");
 		long idPet = historyInputsValidator.idValidator(reader.nextLine());
@@ -189,6 +203,7 @@ public class DominioController {
 			System.out.println("Ingrese el procedimiento");
 			procedure = reader.nextLine();
 			historyInputsValidator.procedureValidator(procedure);
+			
 			break;
 		}
 		case "2": {
@@ -215,7 +230,7 @@ public class DominioController {
 			System.out.println("Ingrese la dosis de la medicina");
 			medicationDosage = reader.nextLine();
 			historyInputsValidator.medicationDosageValidator(medicationDosage);
-			idOrder = createOrder(petDto,medicine,medicationDosage);
+			idOrder = createOrder(petDto, medicine, medicationDosage);
 			break;
 		}
 		case "2": {
@@ -272,6 +287,7 @@ public class DominioController {
 		historyInputsValidator.proceduredetailValidator(proceduredetail);
 		int orderCancelation = 0;
 		HistoryDto historyDto = new HistoryDto();
+		historyDto.setAdmissionDate(actualDate);
 		historyDto.setIdPet(petDto);
 		historyDto.setReason(reason);
 		historyDto.setSymptomatology(symptomatology);
@@ -285,17 +301,44 @@ public class DominioController {
 		historyDto.setProceduredetail(proceduredetail);
 		historyDto.setOrderCancelation(orderCancelation);
 		vetService.createHistoryClinic(historyDto);
-		
+
 	}
 
-	public OrderDto createOrder(PetDto petDto,String medicine, String medicationDosage) throws Exception {
+	public OrderDto createOrder(PetDto petDto, String medicine, String medicationDosage) throws Exception {
 		OrderDto orderDto = new OrderDto();
 		orderDto.setIdPet(petDto);
-		orderDto.setMedicationAndDosage(medicine+" - "+medicationDosage);
-		long idOrder =  vetService.createOrder(orderDto);
+		orderDto.setMedicationAndDosage(medicine + " - " + medicationDosage);
+		long idOrder = vetService.createOrder(orderDto);
 		orderDto.setIdOrder(idOrder);
-		System.out.println("Se genero a la Orden con el id: "+idOrder);
+		System.out.println("Se genero a la Orden con el id: " + idOrder);
 		return orderDto;
 	}
+
+	public void findHistoryClinic() throws Exception {
+		System.out.println("==============INGRESO DE DATOS================");
+		System.out.println("Ingresa el id de la mascota");
+		long idPet = historyInputsValidator.idValidator(reader.nextLine());
+		PetDto petDto = new PetDto(idPet);
+		HistoryDto historyDto = new HistoryDto();
+		historyDto.setIdPet(petDto);
+		vetService.findHistoryClinic(historyDto);
+	}
+
+	public void findOrders() throws Exception {
+		System.out.println("==============ORDENES================");
+		vetService.findOrders();
+	}
+	
+	public void cancelOrders() throws Exception{
+		System.out.println("================ANULACION===============");
+		System.out.println("Ingresa el id de la Orden");
+		long idOrder = historyInputsValidator.idValidator(reader.nextLine());
+		OrderDto orderDto = new OrderDto(idOrder);
+		HistoryDto historyDto = new HistoryDto();
+		historyDto.setIdOrder(orderDto);
+		vetService.cancelOrder(orderDto);
+		
+	}
+	
 
 }

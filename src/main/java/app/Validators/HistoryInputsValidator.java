@@ -1,5 +1,7 @@
 package app.Validators;
 
+import java.sql.Date;
+
 public class HistoryInputsValidator  extends InputsValidator {
 	public long idValidator(String number) throws Exception {
 		return super.longValidator(number, "id");
@@ -33,5 +35,8 @@ public class HistoryInputsValidator  extends InputsValidator {
 	}
 	public int orderCancelationValidator(String number) throws Exception {
 		return super.integerValidator(number, "Cancelacion de orden");
+	}
+	public Date admissionDateValidator(String date) throws Exception{
+		 return super.dateValidator(date, "Fecha incorrecta");
 	}
 }
