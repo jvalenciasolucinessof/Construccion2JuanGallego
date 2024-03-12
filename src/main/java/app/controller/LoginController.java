@@ -32,6 +32,8 @@ public class LoginController {
 			dominioController.sessionAdmin();
 		} else if (personDto.getRoll().equals("Vet")){
 			dominioController.sessionVet();
+		}else if (personDto.getRoll().equals("Seller")){
+			dominioController.sessionSeller();
 		}
 	}
 	

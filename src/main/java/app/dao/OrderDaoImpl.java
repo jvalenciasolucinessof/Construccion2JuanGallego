@@ -87,4 +87,28 @@ public class OrderDaoImpl implements OrderDao {
 		preparedStatement.close();
 	}
 
+	@Override
+	public OrderDto findDataOrder(OrderDto orderDto) throws Exception {
+		String query = "SELECT ID,MASCOTA,PROPIETARIO,MEDICO,MEDICAMENTO,FECHA FROM ORDEN WHERE ID = ?";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setLong(1, orderDto.getIdOrder());
+		ResultSet resulSet = preparedStatement.executeQuery();
+		if(resulSet.next()) {
+			OrderDto responseOrderDto = new OrderDto();
+			PetDto petDto = new PetDto(resulSet.getLong("MASCOTA"));
+			PersonDto ownerDocument = new PersonDto(resulSet.getLong("PROPIETARIO"));
+			PersonDto vetDocument = new PersonDto(resulSet.getLong("MEDICO"));
+			responseOrderDto.setIdOrder(resulSet.getLong("ID"));
+			responseOrderDto.setIdPet(petDto);
+			responseOrderDto.setOwnerDocument(ownerDocument);;
+			responseOrderDto.setVetDocument(vetDocument);
+			responseOrderDto.setMedicationAndDosage(resulSet.getString("MEDICAMENTO"));
+			responseOrderDto.setGenerationDate(resulSet.getDate("FECHA"));
+			return responseOrderDto;
+		}
+		resulSet.close();
+		preparedStatement.close();
+		return null;
+	}
+
 }

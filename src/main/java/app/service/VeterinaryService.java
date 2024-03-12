@@ -13,13 +13,16 @@ import app.dao.PersonDao;
 import app.dao.PersonDaoImpl;
 import app.dao.PetDao;
 import app.dao.PetDaoImpl;
+import app.dao.SaleDao;
+import app.dao.SaleDaoImpl;
 import app.dto.HistoryDto;
 import app.dto.OrderDto;
 import app.dto.PersonDto;
 import app.dto.PetDto;
+import app.dto.SaleDto;
 import app.dto.SessionDto;
 
-public class VeterinaryService implements AdministratorService, VetService, LoginService {
+public class VeterinaryService implements AdministratorService, VetService, LoginService,SellerService {
 	List<String> roles = Arrays.asList("Admin", "Vet", "Owner", "Seller");
 	List<String> speciesPet = Arrays.asList("Perro", "Gato", "Pez", "Ave");
 	private static long sessionId = 0L;
@@ -178,7 +181,42 @@ public class VeterinaryService implements AdministratorService, VetService, Logi
 			throw new Exception("no hay una orden valida");
 		}
 		orderDao.cancelOrder(orderDto);
+	}
 
+	@Override
+	public void createSale(SaleDto saleDto) throws Exception {
+		OrderDao orderDao = new OrderDaoImpl();
+		if (!orderDao.findOrderById(saleDto.getIdOrder())) {
+			throw new Exception("no hay una orden valida");
+		}
+		OrderDto dataOrder = orderDao.findDataOrder(saleDto.getIdOrder());
+		saleDto.setIdPet(dataOrder.getIdPet());
+		saleDto.setOwnerDocument(dataOrder.getOwnerDocument());
+		SaleDao saleDao= new SaleDaoImpl();
+		saleDao.createSale(saleDto);
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

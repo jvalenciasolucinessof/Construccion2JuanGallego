@@ -16,7 +16,7 @@ public class App {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
-			System.out.print("deteniendo la aplicacion");
+			//System.out.print("deteniendo la aplicacion");
 		}
 	}
 
