@@ -10,5 +10,8 @@ public interface VetService {
 	public void createPet(PetDto petDto) throws Exception;
 	public long createOrder(OrderDto orderDto) throws Exception;
 	public void createHistoryClinic(HistoryDto historyDto) throws Exception;
+	public void findHistoryClinic(HistoryDto historyDto) throws Exception;
+	public void findOrders() throws Exception;
+	public void cancelOrder(OrderDto orderDto) throws Exception;
 
 }

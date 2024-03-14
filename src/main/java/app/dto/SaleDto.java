@@ -1,38 +1,41 @@
-package app.models;
+package app.dto;
 
 import java.sql.Date;
 
-public class Sale {
+public class SaleDto {
 	private int idSale;
-    private Pet idPet;
-    private Person ownerDocument;
-    private Order idOrder;
+    private PetDto idPet;
+    private PersonDto ownerDocument;
+    private OrderDto idOrder;
     private String productName;
     private double price;
     private int amount;
     private Date date;
+	public SaleDto() {
+		this.date = new  Date(System.currentTimeMillis());
+	}
 	public int getIdSale() {
 		return idSale;
 	}
 	public void setIdSale(int idSale) {
 		this.idSale = idSale;
 	}
-	public Pet getIdPet() {
+	public PetDto getIdPet() {
 		return idPet;
 	}
-	public void setIdPet(Pet idPet) {
+	public void setIdPet(PetDto idPet) {
 		this.idPet = idPet;
 	}
-	public Person getOwnerDocument() {
+	public PersonDto getOwnerDocument() {
 		return ownerDocument;
 	}
-	public void setOwnerDocument(Person ownerDocument) {
+	public void setOwnerDocument(PersonDto ownerDocument) {
 		this.ownerDocument = ownerDocument;
 	}
-	public Order getIdOrder() {
+	public OrderDto getIdOrder() {
 		return idOrder;
 	}
-	public void setIdOrder(Order idOrder) {
+	public void setIdOrder(OrderDto idOrder) {
 		this.idOrder = idOrder;
 	}
 	public String getProductName() {
@@ -59,6 +62,7 @@ public class Sale {
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	
 
 }

@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 
 import app.config.MYSQLConnection;
 import app.dto.PetDto;
-import app.dto.SessionDto;
 
 public class PetDaoImpl implements PetDao{
 	public Connection connection = MYSQLConnection.getConnection();
@@ -24,6 +23,7 @@ public class PetDaoImpl implements PetDao{
 		preparedStatement.setString(i++, petDto.getCharacteristics());
 		preparedStatement.execute();
 	}
+	@SuppressWarnings("null")
 	@Override
 	public long findOwnerPetById(PetDto petDto) throws Exception {
 		String query = "SELECT PROPIETARIO FROM MASCOTA WHERE ID = ?";
@@ -39,6 +39,17 @@ public class PetDaoImpl implements PetDao{
 		resulSet.close();
 		preparedStatement.close();
 		return (Long) null;
+	}
+	@Override
+	public boolean findPetById(PetDto petDto) throws Exception {
+		String query = "SELECT ID FROM MASCOTA WHERE ID = ?";
+		PreparedStatement preparedStatement = connection.prepareStatement(query);
+		preparedStatement.setLong(1, petDto.getIdPet());
+		ResultSet resulSet = preparedStatement.executeQuery();
+		boolean result = resulSet.next();
+		resulSet.close();
+		preparedStatement.close();
+		return result;
 	}
 
 }

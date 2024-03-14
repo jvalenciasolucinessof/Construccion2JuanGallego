@@ -3,7 +3,7 @@ package app.dto;
 import java.sql.Date;
 
 public class HistoryDto {
-	private Date admissionDate = new Date(System.currentTimeMillis());
+	private long admissionDate;
 	private PetDto idPet;
 	private PersonDto vet;
 	private String reason;
@@ -21,8 +21,12 @@ public class HistoryDto {
 	public HistoryDto() {
 	}
 
-	public Date getAdmissionDate() {
+	public long getAdmissionDate() {
 		return admissionDate;
+	}
+
+	public void setAdmissionDate(long admissionDate) {
+		this.admissionDate = admissionDate;
 	}
 
 	public PetDto getIdPet() {
@@ -32,7 +36,6 @@ public class HistoryDto {
 	public void setIdPet(PetDto idPet) {
 		this.idPet = idPet;
 	}
-
 
 	public String getReason() {
 		return reason;
@@ -130,6 +133,24 @@ public class HistoryDto {
 		this.orderCancelation = ordercancelation;
 	}
 
-
+	public void showHistorys() {
+		Date responseAdmissionsDate = new Date(this.admissionDate);
+		System.out.println("==========================================");
+		System.out.println(" Fecha de Ingreso: "+responseAdmissionsDate+
+							"\n Id mascota: "+this.idPet.getIdPet()+
+							"\n Id Medico: "+this.vet.getId()+
+							"\n Razon: "+this.reason+
+							"\n Sitomatologia: "+this.symptomatology+
+							"\n Diagnosis: "+this.diagnosis+
+							"\n Procedimiento: "+this.procedure+
+							"\n Medicamento: "+this.medicine+
+							"\n Dosis Medicamento: "+this.medicationDosage+
+							"\n Id Orden: "+this.idOrder+
+							"\n Historial de Vacunacion: "+this.vaccinationHistory+
+							"\n Medicamentos Alergia: "+this.medicinesAllegic+
+							"\n Detalle de Procedimiento: "+this.proceduredetail+
+							"\n Orden cancelada: "+this.orderCancelation+"\n");
+		System.out.println("==========================================");
+	}
 
 }

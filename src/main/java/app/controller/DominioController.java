@@ -5,11 +5,14 @@ import java.util.Scanner;
 import app.Validators.HistoryInputsValidator;
 import app.Validators.PersonInputsValidator;
 import app.Validators.PetInputsValidator;
+import app.Validators.SaleInputsValidator;
 import app.dto.HistoryDto;
 import app.dto.OrderDto;
 import app.dto.PersonDto;
 import app.dto.PetDto;
+import app.dto.SaleDto;
 import app.service.AdministratorService;
+import app.service.SellerService;
 import app.service.VetService;
 import app.service.VeterinaryService;
 
@@ -17,11 +20,14 @@ public class DominioController {
 	PersonInputsValidator personInputsValidator = new PersonInputsValidator();
 	PetInputsValidator petInputsValidator = new PetInputsValidator();
 	HistoryInputsValidator historyInputsValidator = new HistoryInputsValidator();
+	SaleInputsValidator saleInputsValidator = new SaleInputsValidator();
 	private static Scanner reader = new Scanner(System.in);
 	private static AdministratorService administratorService = new VeterinaryService();
 	private static VetService vetService = new VeterinaryService();
+	private static SellerService sellerService = new VeterinaryService();
 	private static final String MENUADMIN = "1. Crear usuario \n2. Cerrar sesion";
-	private static final String MENUVET = "1. Crear dueño \n2. Crear Mascota \n3. Atender Mascota \n4. Consultar Historia Clinica \n5. Editar Historia Clinica \n6. Listado Ordenes \n7. Anular Orden \n8. Cerrar sesion";
+	private static final String MENUVET = "1. Crear dueño \n2. Crear Mascota \n3. Atender Mascota \n4. Consultar Historia Clinica \n5. Listado Ordenes \n6. Anular Orden \n7. Cerrar sesion";
+	private static final String MENUSELLER = "1. Consultar Ordenes \n2. Facturar Orden \n3. Cerrar Sesion";
 
 	// SESION ADMIN
 	public void sessionAdmin() {
@@ -68,7 +74,7 @@ public class DominioController {
 		System.out.println("Ingresa la edad");
 		int age = personInputsValidator.ageValidator(reader.nextLine());
 
-		System.out.println("ingrese el rol (Admin,Vet, Owner, Seller)");
+		System.out.println("ingrese el rol (Admin,Vet,Seller)");
 		String role = reader.nextLine();
 		personInputsValidator.rollValidator(role);
 
@@ -115,7 +121,19 @@ public class DominioController {
 			createHistoryClinic();
 			return true;
 		}
-		case "8": {
+		case "4": {
+			findHistoryClinic();
+			return true;
+		}
+		case "5": {
+			findOrders();
+			return true;
+		}
+		case "6": {
+			cancelOrders();
+			return true;
+		}
+		case "7": {
 			return false;
 		}
 		default: {
@@ -168,6 +186,7 @@ public class DominioController {
 	}
 
 	public void createHistoryClinic() throws Exception {
+		long actualDate = System.currentTimeMillis();
 		System.out.println("==============INGRESO DE HISTORIA CLINICA================");
 		System.out.println("Ingresa el id de la mascota");
 		long idPet = historyInputsValidator.idValidator(reader.nextLine());
@@ -189,6 +208,7 @@ public class DominioController {
 			System.out.println("Ingrese el procedimiento");
 			procedure = reader.nextLine();
 			historyInputsValidator.procedureValidator(procedure);
+			
 			break;
 		}
 		case "2": {
@@ -215,7 +235,7 @@ public class DominioController {
 			System.out.println("Ingrese la dosis de la medicina");
 			medicationDosage = reader.nextLine();
 			historyInputsValidator.medicationDosageValidator(medicationDosage);
-			idOrder = createOrder(petDto,medicine,medicationDosage);
+			idOrder = createOrder(petDto, medicine, medicationDosage);
 			break;
 		}
 		case "2": {
@@ -272,6 +292,7 @@ public class DominioController {
 		historyInputsValidator.proceduredetailValidator(proceduredetail);
 		int orderCancelation = 0;
 		HistoryDto historyDto = new HistoryDto();
+		historyDto.setAdmissionDate(actualDate);
 		historyDto.setIdPet(petDto);
 		historyDto.setReason(reason);
 		historyDto.setSymptomatology(symptomatology);
@@ -285,17 +306,103 @@ public class DominioController {
 		historyDto.setProceduredetail(proceduredetail);
 		historyDto.setOrderCancelation(orderCancelation);
 		vetService.createHistoryClinic(historyDto);
-		
+
 	}
 
-	public OrderDto createOrder(PetDto petDto,String medicine, String medicationDosage) throws Exception {
+	public OrderDto createOrder(PetDto petDto, String medicine, String medicationDosage) throws Exception {
 		OrderDto orderDto = new OrderDto();
 		orderDto.setIdPet(petDto);
-		orderDto.setMedicationAndDosage(medicine+" - "+medicationDosage);
-		long idOrder =  vetService.createOrder(orderDto);
+		orderDto.setMedicationAndDosage(medicine + " - " + medicationDosage);
+		long idOrder = vetService.createOrder(orderDto);
 		orderDto.setIdOrder(idOrder);
-		System.out.println("Se genero a la Orden con el id: "+idOrder);
+		System.out.println("Se genero a la Orden con el id: " + idOrder);
 		return orderDto;
 	}
+
+	public void findHistoryClinic() throws Exception {
+		System.out.println("==============INGRESO DE DATOS================");
+		System.out.println("Ingresa el id de la mascota");
+		long idPet = historyInputsValidator.idValidator(reader.nextLine());
+		PetDto petDto = new PetDto(idPet);
+		HistoryDto historyDto = new HistoryDto();
+		historyDto.setIdPet(petDto);
+		vetService.findHistoryClinic(historyDto);
+	}
+
+	public void findOrders() throws Exception {
+		System.out.println("==============ORDENES================");
+		vetService.findOrders();
+	}
+	
+	public void cancelOrders() throws Exception{
+		System.out.println("================ANULACION===============");
+		System.out.println("Ingresa el id de la Orden");
+		long idOrder = historyInputsValidator.idValidator(reader.nextLine());
+		OrderDto orderDto = new OrderDto(idOrder);
+		HistoryDto historyDto = new HistoryDto();
+		historyDto.setIdOrder(orderDto);
+		vetService.cancelOrder(orderDto);
+		
+	}
+	
+	// SESSION SELLER
+		public void sessionSeller() {
+			boolean runApp = true;
+			while (runApp) {
+				try {
+					System.out.println("==========INGRESE=============");
+					System.out.println(MENUSELLER);
+					System.out.println("==============================");
+					String option = reader.nextLine();
+					runApp = menuSeller(option);
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+
+			}
+		}
+		
+		private boolean menuSeller(String option) throws Exception {
+			switch (option) {
+			case "1": {
+				findOrders();
+				return true;
+			}
+			case "2": {
+				createSale();
+				return true;
+			}
+			case "3": {
+				return false;
+			}
+			default: {
+				System.out.println("ingrese una opcion valida");
+				return true;
+			}
+			}
+		}
+		
+		public void createSale()  throws Exception{
+			System.out.println("================ANULACION===============");
+			System.out.println("Ingresa el id de la Orden");
+			long idOrder = historyInputsValidator.idValidator(reader.nextLine());
+			OrderDto orderDto = new OrderDto(idOrder);
+			System.out.println("Ingresa el nombre del producto");
+			String productName = reader.nextLine();
+			saleInputsValidator.productNameValidator(productName);
+			System.out.println("Ingresa el cantidad");
+			int amount = saleInputsValidator.amountValidator(reader.nextLine());
+			System.out.println("Ingresa el precio");
+			double price = saleInputsValidator.priceValidator(reader.nextLine());
+			SaleDto saleDto = new SaleDto();
+			saleDto.setIdOrder(orderDto);
+			saleDto.setProductName(productName);
+			saleDto.setAmount(amount);
+			saleDto.setPrice(price);
+			sellerService.createSale(saleDto);
+		}
+
+		
+	
 
 }

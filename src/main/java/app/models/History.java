@@ -3,7 +3,7 @@ package app.models;
 import java.sql.Date;
 
 public class History {
-	private Date admissionDate = new Date(System.currentTimeMillis());
+	private Date admissionDate;
 	private Pet idPet;
 	private Person vet;
 	private String reason;
@@ -20,6 +20,9 @@ public class History {
 	
 	public Date getAdmissionDate() {
 		return admissionDate;
+	}
+	public void setAdmissionDate(Date admissionDate) {
+		this.admissionDate = admissionDate;
 	}
 	public Pet getIdPet() {
 		return idPet;
